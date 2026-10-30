@@ -1,26 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-alabaster: #F4F3EF;
+  --color-carbon: #111315;
+  --color-carbon-light: #1a1d20;
+  --color-carbon-mid: #2a2d30;
+  --color-safety-orange: #FF4F00;
+  --color-safety-orange-dim: #cc3f00;
+  --color-crimson: #D92D20;
+  --color-amber: #D97706;
+  --color-emerald: #059669;
+  --color-border: #D6D3CD;
+  --color-border-dark: #3a3d40;
+  --color-text-primary: #111315;
+  --color-text-secondary: #6B7280;
+  --color-text-muted: #9CA3AF;
+  --color-text-inverse: #F4F3EF;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Base styles */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-alabaster text-text-primary font-sans antialiased;
 }
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #F4F3EF; }
+::-webkit-scrollbar-thumb { background: #D6D3CD; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+
+/* Policy slider custom styles */
+input[type="range"] {
+  @apply appearance-none h-2 rounded-full bg-border;
+}
+input[type="range"]::-webkit-slider-thumb {
+  @apply appearance-none w-4 h-4 rounded-full bg-safety-orange cursor-pointer;
+  margin-top: -4px;
+}
+
+/* Leaflet overrides for dark panels */
+.leaflet-container {
+  background: #F4F3EF !important;
+  font-family: 'Inter', sans-serif !important;
+}
+.leaflet-popup-content-wrapper {
+  background: #111315 !important;
+  color: #F4F3EF !important;
+  border-radius: 8px !important;
+  border: 1px solid #3a3d40 !important;
+  font-family: 'Inter', sans-serif !important;
+}
+.leaflet-popup-tip {
+  background: #111315 !important;
+}
+.leaflet-popup-content {
+  margin: 12px !important;
+  font-size: 13px !important;
+}
+
+/* Animation utilities */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulseOrange {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 79, 0, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(255, 79, 0, 0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-slide-in { animation: slideIn 0.3s ease-out; }
+.animate-pulse-orange { animation: pulseOrange 2s infinite; }
+.animate-fade-in { animation: fadeIn 0.2s ease-out; }
+
+/* Telemetry monospace styling */
+.telemetry {
+  @apply font-mono text-sm tracking-tight;
+}
+
+/* Priority badge colors */
+.priority-critical { @apply bg-crimson text-white; }
+.priority-high { @apply bg-safety-orange text-white; }
+.priority-medium { @apply bg-amber text-white; }
+.priority-low { @apply bg-emerald text-white; }
