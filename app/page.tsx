@@ -20,7 +20,13 @@ function WorkbenchContent() {
       <TopBar />
 
       {/* Main content area below the top bar */}
-      <main className="pt-[72px] px-4 pb-4" style={{ height: '100vh' }}>
+      <main
+        id={`stage-panel-${state.activeView}`}
+        role="tabpanel"
+        aria-labelledby={`tab-${state.activeView}`}
+        className="pt-[72px] px-4 pb-4"
+        style={{ height: '100vh' }}
+      >
         <div className="h-full">
           {state.activeView === 'capture' && <CaptureView />}
           {state.activeView === 'understand' && <UnderstandView />}

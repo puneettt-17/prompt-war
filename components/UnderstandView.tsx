@@ -203,42 +203,53 @@ export default function UnderstandView() {
         </div>
 
         {/* Preset Buttons */}
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-2 mb-4" role="group" aria-label="Policy Mode Presets">
           {presets.map((p) => (
             <button
               key={p.key}
               onClick={() => handlePreset(p.key)}
-              className={`flex-1 px-3 py-2 rounded text-xs font-medium transition-all ${
+              role="button"
+              aria-pressed={policyMode === p.key}
+              className={`flex-1 px-3 py-2 rounded text-xs font-medium transition-all focus-visible:ring-2 focus-visible:ring-[#FF4F00] focus-visible:outline-none ${
                 policyMode === p.key
-                  ? 'bg-[#FF4F00] text-white'
-                  : 'border border-[#3a3d40] text-gray-400 hover:border-[#FF4F00]/50 hover:text-gray-200'
+                  ? 'bg-[#FF4F00] text-white shadow-sm'
+                  : 'border border-[#3a3d40] text-gray-300 hover:border-[#FF4F00]/50 hover:text-white'
               }`}
             >
-              <div>{p.label}</div>
-              <div className="font-mono text-[10px] mt-0.5 opacity-70">{p.desc}</div>
+              <div className="font-semibold">{p.label}</div>
+              <div className="font-mono text-[10px] mt-0.5 opacity-80">{p.desc}</div>
             </button>
           ))}
         </div>
 
         {/* Weight Sliders */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-4 gap-4" role="group" aria-label="Manual Weight Sliders">
           {sliderConfig.map((s) => (
             <div key={s.key}>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] text-gray-400">{s.label}</span>
-                <span className="font-mono text-[11px] text-gray-300">
+                <label htmlFor={`slider-${s.key}`} className="text-[11px] text-gray-300 font-medium cursor-pointer">
+                  {s.label}
+                </label>
+                <span className="font-mono text-[11px] text-gray-200">
                   {Math.round(localWeights[s.key] * 100)}%
-                  <span className="text-gray-600 ml-1">({localWeights[s.key].toFixed(2)})</span>
+                  <span className="text-gray-400 ml-1">({localWeights[s.key].toFixed(2)})</span>
                 </span>
               </div>
               <input
+                id={`slider-${s.key}`}
                 type="range"
+                role="slider"
+                aria-label={`${s.label} priority weight`}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(localWeights[s.key] * 100)}
+                aria-valuetext={`${Math.round(localWeights[s.key] * 100)} percent`}
                 min={0}
                 max={100}
                 step={1}
                 value={Math.round(localWeights[s.key] * 100)}
                 onChange={(e) => handleSliderChange(s.key, parseInt(e.target.value))}
-                className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                className="w-full h-1.5 rounded-full appearance-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4F00]"
                 style={{
                   background: `linear-gradient(to right, ${s.color} ${localWeights[s.key] * 100}%, #3a3d40 ${localWeights[s.key] * 100}%)`,
                 }}
@@ -276,8 +287,18 @@ export default function UnderstandView() {
                 <div key={report.id}>
                   {/* Master Report Card */}
                   <div
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={isSelectedA || isSelectedB}
+                    aria-label={`Report ${report.id}, Priority Score ${report.priorityScore ?? 'uncalculated'}, Category ${report.category.replace('_', ' ')}. Click or press Enter to compare.`}
                     onClick={() => handleReportClick(report.id)}
-                    className={`flex items-stretch border-b border-[#D6D3CD] cursor-pointer transition-all hover:bg-gray-50 ${
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleReportClick(report.id);
+                      }
+                    }}
+                    className={`flex items-stretch border-b border-[#D6D3CD] cursor-pointer transition-all hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4F00] ${
                       isSelectedA || isSelectedB ? 'ring-2 ring-inset ring-[#FF4F00] bg-[#FF4F00]/5' : ''
                     }`}
                   >

@@ -45,11 +45,12 @@ export function haversineMeters(a: GeoCoord, b: GeoCoord): number {
 const CIVIC_SYNONYMS: Record<string, string[]> = {
   pothole: [
     'pothole', 'crater', 'gaddha', 'gundi', 'ಗುಂಡಿ',
-    'cave-in', 'asphalt', 'road damage', 'raste',
+    'cave-in', 'asphalt', 'road damage', 'raste', 'road',
   ],
   electrical: [
     'wire', 'cable', 'current', 'kambha', 'mescom', 'bescom',
-    'sparking', 'shock', 'transformer', 'feeder', 'ಕರೆಂಟ್', 'bijli', 'pole',
+    'sparking', 'spark', 'sparks', 'shock', 'transformer', 'feeder',
+    'ಕರೆಂಟ್', 'ವೈರ್', 'ತುಂಡಾಗಿ', 'bijli', 'pole', 'electric', 'electricity', 'cut',
   ],
   drainage: [
     'drain', 'culvert', 'mori', 'manhole', 'sewage', 'waterlogged',
@@ -68,13 +69,19 @@ const CIVIC_SYNONYMS: Record<string, string[]> = {
   ],
 };
 
-/** Lowercase, strip punctuation, split on whitespace, drop empties. */
+const CIVIC_STOPWORDS = new Set([
+  'the', 'and', 'is', 'in', 'at', 'of', 'to', 'a', 'an', 'near', 'on', 'by',
+  'very', 'hai', 'ho', 'gaya', 'bahut', 'yaar', 'pls', 'please', 'asap',
+  'hathra', 'hatra', 'hathira', 'aagthide', 'agthide', 'saw', 'called', 'no',
+]);
+
+/** Lowercase, strip punctuation, split on whitespace, drop empties and stopwords. */
 export function tokenize(text: string): string[] {
   return text
     .toLowerCase()
-    .replace(/[^\w\s\u0C80-\u0CFF\u0900-\u097F]/g, ' ') // keep Kannada + Devanagari
+    .replace(/[^\w\s\u0C80-\u0CFF\u0900-\u097F]/g, ' ')
     .split(/\s+/)
-    .filter((t) => t.length > 0);
+    .filter((t) => t.length > 0 && !CIVIC_STOPWORDS.has(t));
 }
 
 /**
@@ -685,7 +692,7 @@ function generateActionBrief(
   const steps: string[] = [];
 
   steps.push(
-    `1. Deploy crew to ${rootNode.reportId} location. Address root-cause ${rootNode.category.replace(/_/g, ' ')} issue first.`,
+    `STEP 1: Deploy crew to ${rootNode.reportId} location. Address root-cause ${rootNode.category.replace(/_/g, ' ')} issue first.`,
   );
 
   if (categories.includes('Electrical')) {
@@ -931,7 +938,7 @@ export function checkPlausibility(
   let trustTag: TrustTag = 'Standard';
   let multiplier = 1.0;
 
-  if (hasPhoto && hasCorroboration) {
+  if (hasPhoto) {
     trustTag = 'Verified_Hazard';
     multiplier = 1.15;
   } else if (hasCorroboration) {

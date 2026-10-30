@@ -78,6 +78,17 @@ export default function TopBar() {
     return () => clearInterval(interval);
   }, []);
 
+  // Keyboard accessibility: ESC key closes modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showHonestyModal) {
+        setShowHonestyModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showHonestyModal]);
+
   const handleTabClick = useCallback(
     (viewId: ViewId) => {
       dispatch({ type: 'SET_VIEW', payload: viewId });
@@ -119,20 +130,29 @@ export default function TopBar() {
         </div>
 
         {/* Center: Navigation Tabs */}
-        <nav className="flex items-center gap-1 h-full">
+        <nav
+          className="flex items-center gap-1 h-full"
+          role="tablist"
+          aria-label="Triage workbench stages"
+        >
           {NAV_TABS.map((tab) => {
             const isActive = state.activeView === tab.id;
             return (
               <button
                 key={tab.id}
+                id={`tab-${tab.id}`}
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`stage-panel-${tab.id}`}
                 onClick={() => handleTabClick(tab.id)}
                 className={`
                   h-full px-4 text-xs font-medium uppercase tracking-wider
                   transition-colors duration-150 border-b-2
+                  focus-visible:ring-2 focus-visible:ring-[#FF4F00] focus-visible:outline-none
                   ${
                     isActive
                       ? 'border-[#FF4F00] text-[#FF4F00]'
-                      : 'border-transparent text-[#6b7280] hover:text-[#F4F3EF]'
+                      : 'border-transparent text-[#9CA3AF] hover:text-[#F4F3EF]'
                   }
                 `}
                 style={{ background: 'transparent' }}
@@ -148,7 +168,10 @@ export default function TopBar() {
           {/* Honesty & Limits */}
           <button
             onClick={toggleModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors duration-150"
+            aria-label="Open Honesty and Architecture Limits Modal"
+            aria-haspopup="dialog"
+            aria-expanded={showHonestyModal}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[#FF4F00] focus-visible:outline-none"
             style={{
               color: '#F4F3EF',
               border: '1px solid #3a3d41',
@@ -161,14 +184,15 @@ export default function TopBar() {
               (e.currentTarget as HTMLButtonElement).style.borderColor = '#3a3d41';
             }}
           >
-            <Shield size={13} />
+            <Shield size={13} aria-hidden="true" />
             <span>Honesty &amp; Limits</span>
           </button>
 
           {/* Reset Demo */}
           <button
             onClick={handleReset}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors duration-150"
+            aria-label="Reset demo state and reseed 42 reports"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[#FF4F00] focus-visible:outline-none"
             style={{
               color: '#F4F3EF',
               border: '1px solid #3a3d41',
@@ -181,13 +205,16 @@ export default function TopBar() {
               (e.currentTarget as HTMLButtonElement).style.borderColor = '#3a3d41';
             }}
           >
-            <RotateCcw size={13} />
+            <RotateCcw size={13} aria-hidden="true" />
             <span>Reset Demo</span>
           </button>
 
           {/* Live Clock IST */}
           <div
             className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs"
+            aria-label="Indian Standard Time"
+            role="status"
+            aria-live="off"
             style={{
               color: '#F4F3EF',
               fontFamily: 'JetBrains Mono, monospace',
@@ -197,9 +224,9 @@ export default function TopBar() {
               justifyContent: 'center',
             }}
           >
-            <Clock size={12} style={{ color: '#FF4F00' }} />
+            <Clock size={12} style={{ color: '#FF4F00' }} aria-hidden="true" />
             <span>{currentTime || '--:--:--'}</span>
-            <span style={{ color: '#6b7280', fontSize: '9px' }}>IST</span>
+            <span style={{ color: '#9CA3AF', fontSize: '9px' }}>IST</span>
           </div>
         </div>
       </header>
@@ -208,14 +235,17 @@ export default function TopBar() {
       {showHonestyModal && (
         <div
           className="fixed inset-0 z-[60] flex items-center justify-center"
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="honesty-modal-title"
           onClick={toggleModal}
         >
           <div
-            className="relative w-full max-w-2xl mx-4 max-h-[85vh] overflow-y-auto rounded-lg"
+            className="relative w-full max-w-2xl mx-4 max-h-[85vh] overflow-y-auto rounded-lg shadow-2xl"
             style={{
               backgroundColor: '#111315',
-              border: '1px solid #2a2d31',
+              border: '1px solid #3a3d41',
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -228,6 +258,7 @@ export default function TopBar() {
               }}
             >
               <h2
+                id="honesty-modal-title"
                 className="text-lg font-semibold"
                 style={{ color: '#F4F3EF' }}
               >
@@ -235,16 +266,17 @@ export default function TopBar() {
               </h2>
               <button
                 onClick={toggleModal}
-                className="p-1 rounded transition-colors duration-150"
-                style={{ color: '#6b7280' }}
+                aria-label="Close honesty modal"
+                className="p-1 rounded transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[#FF4F00] focus-visible:outline-none"
+                style={{ color: '#9CA3AF' }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLButtonElement).style.color = '#F4F3EF';
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.color = '#6b7280';
+                  (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF';
                 }}
               >
-                <X size={18} />
+                <X size={18} aria-hidden="true" />
               </button>
             </div>
 

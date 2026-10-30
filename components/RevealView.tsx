@@ -117,32 +117,45 @@ export default function RevealView() {
             </div>
             {/* Toggles */}
             <button
+              type="button"
+              role="switch"
+              aria-checked={showVulnerabilityRings}
+              aria-label="Toggle hospital and school vulnerability rings on map"
               onClick={() => setShowVulnerabilityRings(v => !v)}
-              className={`flex items-center gap-1 text-[10px] px-2 py-1 rounded border transition-all ${
+              className={`flex items-center gap-1 text-[10px] px-2 py-1 rounded border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4F00] ${
                 showVulnerabilityRings
-                  ? 'border-[#FF4F00] text-[#FF4F00] bg-[#FF4F00]/5'
-                  : 'border-[#D6D3CD] text-gray-400'
+                  ? 'border-[#FF4F00] text-[#FF4F00] bg-[#FF4F00]/10 font-semibold'
+                  : 'border-[#D6D3CD] text-gray-500 hover:text-gray-700'
               }`}
             >
-              {showVulnerabilityRings ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+              {showVulnerabilityRings ? <Eye className="w-3 h-3" aria-hidden="true" /> : <EyeOff className="w-3 h-3" aria-hidden="true" />}
               Vulnerability Rings
             </button>
             <button
+              type="button"
+              role="switch"
+              aria-checked={showClusterZones}
+              aria-label="Toggle 250m causal cluster zones on map"
               onClick={() => setShowClusterZones(v => !v)}
-              className={`flex items-center gap-1 text-[10px] px-2 py-1 rounded border transition-all ${
+              className={`flex items-center gap-1 text-[10px] px-2 py-1 rounded border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D92D20] ${
                 showClusterZones
-                  ? 'border-[#D92D20] text-[#D92D20] bg-[#D92D20]/5'
-                  : 'border-[#D6D3CD] text-gray-400'
+                  ? 'border-[#D92D20] text-[#D92D20] bg-[#D92D20]/10 font-semibold'
+                  : 'border-[#D6D3CD] text-gray-500 hover:text-gray-700'
               }`}
             >
-              {showClusterZones ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+              {showClusterZones ? <Eye className="w-3 h-3" aria-hidden="true" /> : <EyeOff className="w-3 h-3" aria-hidden="true" />}
               Cluster Zones
             </button>
           </div>
         </div>
 
         {/* Map */}
-        <div className="flex-1 rounded-lg border border-[#D6D3CD] overflow-hidden" style={{ minHeight: '400px' }}>
+        <div
+          role="region"
+          aria-label="Geographic map of Mangaluru municipal hazard reports"
+          className="flex-1 rounded-lg border border-[#D6D3CD] overflow-hidden"
+          style={{ minHeight: '400px' }}
+        >
           <MapComponent
             reports={reports}
             landmarks={landmarks}

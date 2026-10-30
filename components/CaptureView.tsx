@@ -505,23 +505,31 @@ export default function CaptureView() {
           <div className="p-4 space-y-4">
             {/* 1. Text Input Area */}
             <div>
-              <label className="block text-xs font-medium text-[#111315] mb-1">
+              <label
+                htmlFor="complaint-text-input"
+                className="block text-xs font-semibold text-[#111315] mb-1"
+              >
                 Describe the issue
               </label>
               <textarea
+                id="complaint-text-input"
                 value={rawText}
                 onChange={(e) => setRawText(e.target.value)}
                 placeholder="Describe the issue... (English / Hinglish / ಕನ್ನಡ supported)"
                 rows={4}
-                className="w-full rounded-lg border border-[#D6D3CD] bg-[#F4F3EF] px-3 py-2 text-sm text-[#111315] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF4F00]/40 focus:border-[#FF4F00] resize-none"
+                aria-required="true"
+                className="w-full rounded-lg border border-[#D6D3CD] bg-[#F4F3EF] px-3 py-2 text-sm text-[#111315] placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#FF4F00]/50 focus:border-[#FF4F00] resize-none"
               />
             </div>
 
             {/* 2. Voice Mic Button */}
             <div className="flex items-center gap-3">
               <button
+                type="button"
                 onClick={isListening ? stopListening : startListening}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                aria-label={isListening ? 'Stop live voice dictation' : 'Start live voice dictation in browser'}
+                aria-live="polite"
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4F00] ${
                   isListening
                     ? 'bg-[#D92D20] text-white animate-pulse shadow-lg shadow-red-300'
                     : 'bg-[#F4F3EF] text-[#111315] border border-[#D6D3CD] hover:border-[#FF4F00] hover:text-[#FF4F00]'
@@ -529,36 +537,39 @@ export default function CaptureView() {
               >
                 {isListening ? (
                   <>
-                    <MicOff size={16} />
+                    <MicOff size={16} aria-hidden="true" />
                     <span>Stop</span>
                   </>
                 ) : (
                   <>
-                    <Mic size={16} />
+                    <Mic size={16} aria-hidden="true" />
                     <span>Voice Input</span>
                   </>
                 )}
               </button>
               {isListening && (
-                <span className="text-xs text-[#D92D20] font-medium animate-pulse">
+                <span className="text-xs text-[#D92D20] font-semibold animate-pulse" role="status">
                   🎙️ Listening...
                 </span>
               )}
             </div>
 
             {/* 3. Category Selector */}
-            <div>
-              <label className="block text-xs font-medium text-[#111315] mb-1.5">
+            <div role="radiogroup" aria-label="Hazard Category Selection">
+              <span className="block text-xs font-semibold text-[#111315] mb-1.5">
                 Hazard Category
-              </label>
+              </span>
               <div className="flex flex-wrap gap-1.5">
                 {HAZARD_DOMAINS.map((domain) => (
                   <button
                     key={domain}
+                    type="button"
+                    role="radio"
+                    aria-checked={category === domain}
                     onClick={() => setCategory(domain)}
-                    className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all border ${
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4F00] ${
                       category === domain
-                        ? DOMAIN_COLORS[domain] + ' border-transparent ring-2 ring-offset-1 ring-[#FF4F00]/30'
+                        ? DOMAIN_COLORS[domain] + ' border-transparent ring-2 ring-offset-1 ring-[#FF4F00]/40 font-semibold'
                         : 'bg-white text-[#111315] border-[#D6D3CD] hover:border-[#FF4F00]/50'
                     }`}
                   >
@@ -572,8 +583,10 @@ export default function CaptureView() {
             <div>
               <input
                 ref={fileInputRef}
+                id="photo-evidence-upload"
                 type="file"
                 accept="image/*"
+                aria-label="Upload photo evidence of municipal hazard"
                 className="hidden"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
@@ -581,32 +594,36 @@ export default function CaptureView() {
                 }}
               />
               <button
+                type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#F4F3EF] text-[#111315] border border-[#D6D3CD] hover:border-[#FF4F00] hover:text-[#FF4F00] transition-all w-full justify-center"
+                aria-label="Attach photo evidence"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#F4F3EF] text-[#111315] border border-[#D6D3CD] hover:border-[#FF4F00] hover:text-[#FF4F00] transition-all w-full justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4F00]"
               >
-                <Camera size={16} />
+                <Camera size={16} aria-hidden="true" />
                 <span>📷 Attach Photo Evidence</span>
               </button>
               {photoName && (
-                <p className="text-[11px] text-gray-500 mt-1 truncate">
+                <p className="text-[11px] text-gray-600 mt-1 truncate" role="status">
                   📎 {photoName}
                 </p>
               )}
             </div>
 
             {/* 5. Location */}
-            <div>
+            <fieldset>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-medium text-[#111315] flex items-center gap-1">
-                  <MapPin size={12} />
-                  Location
-                </label>
+                <legend className="text-xs font-semibold text-[#111315] flex items-center gap-1">
+                  <MapPin size={12} aria-hidden="true" />
+                  Incident Geographic Location
+                </legend>
                 <button
+                  type="button"
                   onClick={() => setUseMapPin(!useMapPin)}
-                  className={`text-[10px] px-2 py-0.5 rounded-full border transition-all ${
+                  aria-pressed={useMapPin}
+                  className={`text-[10px] px-2 py-0.5 rounded-full border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4F00] ${
                     useMapPin
                       ? 'bg-[#FF4F00] text-white border-[#FF4F00]'
-                      : 'bg-white text-gray-500 border-[#D6D3CD]'
+                      : 'bg-white text-gray-600 border-[#D6D3CD]'
                   }`}
                 >
                   📍 Click Map to Pin
@@ -614,8 +631,9 @@ export default function CaptureView() {
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-[10px] text-gray-400">Latitude</label>
+                  <label htmlFor="latitude-input" className="text-[10px] text-gray-500 font-medium">Latitude</label>
                   <input
+                    id="latitude-input"
                     type="number"
                     step="0.0001"
                     value={lat}
@@ -624,8 +642,9 @@ export default function CaptureView() {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-gray-400">Longitude</label>
+                  <label htmlFor="longitude-input" className="text-[10px] text-gray-500 font-medium">Longitude</label>
                   <input
+                    id="longitude-input"
                     type="number"
                     step="0.0001"
                     value={lng}
@@ -634,15 +653,17 @@ export default function CaptureView() {
                   />
                 </div>
               </div>
-            </div>
+            </fieldset>
 
             {/* 6. Submit Button */}
             <button
+              type="button"
               onClick={() => handleSubmit()}
               disabled={!rawText.trim()}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-[#FF4F00] text-white hover:bg-[#e64600] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-orange-200 active:scale-[0.98]"
+              aria-label="Submit civic report to autonomous triage pipeline"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-[#FF4F00] text-white hover:bg-[#e64600] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-orange-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#FF4F00]"
             >
-              <Send size={16} />
+              <Send size={16} aria-hidden="true" />
               Submit Civic Report
             </button>
           </div>

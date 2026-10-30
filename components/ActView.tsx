@@ -219,24 +219,24 @@ export default function ActView() {
 
                 {/* Status Flow */}
                 <div>
-                  <label className="text-xs font-semibold text-[#111315] mb-2 block">Status Pipeline</label>
-                  <div className="flex items-center gap-1">
+                  <span className="text-xs font-semibold text-[#111315] mb-2 block">Status Pipeline</span>
+                  <div role="list" aria-label="Incident resolution lifecycle steps" className="flex items-center gap-1">
                     {STATUS_FLOW.map((s, i) => {
                       const currentIdx = STATUS_FLOW.indexOf(selectedReport.status);
                       const isActive = i <= currentIdx;
                       const isCurrent = s === selectedReport.status;
                       return (
-                        <div key={s} className="flex items-center gap-1">
+                        <div key={s} role="listitem" aria-current={isCurrent ? 'step' : undefined} className="flex items-center gap-1">
                           <div className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-mono transition-all ${
-                            isCurrent ? 'bg-[#FF4F00] text-white font-bold' :
+                            isCurrent ? 'bg-[#FF4F00] text-white font-bold shadow-sm' :
                             isActive ? 'bg-[#059669]/20 text-[#059669]' :
-                            'bg-gray-100 text-gray-400'
+                            'bg-gray-100 text-gray-500'
                           }`}>
-                            {isActive && i < currentIdx && <CheckCircle2 className="w-3 h-3" />}
-                            {isCurrent && <CircleDot className="w-3 h-3" />}
+                            {isActive && i < currentIdx && <CheckCircle2 className="w-3 h-3" aria-hidden="true" />}
+                            {isCurrent && <CircleDot className="w-3 h-3" aria-hidden="true" />}
                             {s.replace('_', ' ')}
                           </div>
-                          {i < STATUS_FLOW.length - 1 && <ArrowRight className="w-3 h-3 text-gray-300" />}
+                          {i < STATUS_FLOW.length - 1 && <ArrowRight className="w-3 h-3 text-gray-400" aria-hidden="true" />}
                         </div>
                       );
                     })}
@@ -244,30 +244,36 @@ export default function ActView() {
                 </div>
 
                 {/* Department Assignment */}
-                <div>
-                  <label className="text-xs font-semibold text-[#111315] mb-2 block">Assign Department</label>
-                  <div className="grid grid-cols-2 gap-2">
+                <fieldset>
+                  <legend className="text-xs font-semibold text-[#111315] mb-2 block">Assign Municipal Department</legend>
+                  <div role="radiogroup" aria-label="Municipal Department Selection" className="grid grid-cols-2 gap-2">
                     {DEPARTMENTS.map((d) => (
                       <button
                         key={d.value}
+                        type="button"
+                        role="radio"
+                        aria-checked={dispatchDept === d.value}
                         onClick={() => setDispatchDept(d.value)}
-                        className={`flex items-center gap-2 px-3 py-2 rounded text-xs transition-all ${
+                        className={`flex items-center gap-2 px-3 py-2 rounded text-xs transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4F00] ${
                           dispatchDept === d.value
-                            ? 'bg-[#FF4F00] text-white'
-                            : 'border border-[#D6D3CD] text-gray-600 hover:border-[#FF4F00]'
+                            ? 'bg-[#FF4F00] text-white font-semibold'
+                            : 'border border-[#D6D3CD] text-gray-700 hover:border-[#FF4F00]'
                         }`}
                       >
-                        {d.icon}
+                        <span aria-hidden="true">{d.icon}</span>
                         {d.label}
                       </button>
                     ))}
                   </div>
-                </div>
+                </fieldset>
 
                 {/* Field Notes */}
                 <div>
-                  <label className="text-xs font-semibold text-[#111315] mb-2 block">Field Notes</label>
+                  <label htmlFor="dispatch-field-notes" className="text-xs font-semibold text-[#111315] mb-2 block">
+                    Field Dispatch Notes
+                  </label>
                   <textarea
+                    id="dispatch-field-notes"
                     value={fieldNotes}
                     onChange={(e) => setFieldNotes(e.target.value)}
                     className="w-full px-3 py-2 border border-[#D6D3CD] rounded text-xs focus:outline-none focus:ring-2 focus:ring-[#FF4F00]/30 focus:border-[#FF4F00]"
@@ -337,23 +343,33 @@ export default function ActView() {
 
         {/* Search */}
         <div className="px-4 py-3 border-b border-[#3a3d40]">
-          <div className="flex gap-2">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleTrackSearch();
+            }}
+            className="flex gap-2"
+          >
+            <label htmlFor="citizen-tracking-search-input" className="sr-only">
+              Search by Report ID to track status
+            </label>
             <input
+              id="citizen-tracking-search-input"
               type="text"
               value={trackingSearch}
               onChange={(e) => setTrackingSearch(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleTrackSearch()}
               placeholder="Enter Report ID (e.g., AST-1001)"
-              className="flex-1 px-3 py-2 bg-[#1a1d20] border border-[#3a3d40] rounded text-xs text-white font-mono placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FF4F00]/30 focus:border-[#FF4F00]"
+              className="flex-1 px-3 py-2 bg-[#1a1d20] border border-[#3a3d40] rounded text-xs text-white font-mono placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#FF4F00]/50 focus:border-[#FF4F00]"
             />
             <button
-              onClick={handleTrackSearch}
-              className="px-4 py-2 bg-[#FF4F00] hover:bg-[#cc3f00] text-white rounded text-xs font-semibold transition-colors flex items-center gap-1"
+              type="submit"
+              aria-label="Search and track complaint status"
+              className="px-4 py-2 bg-[#FF4F00] hover:bg-[#cc3f00] text-white rounded text-xs font-semibold transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-[#FF4F00]"
             >
-              <Search className="w-3.5 h-3.5" />
+              <Search className="w-3.5 h-3.5" aria-hidden="true" />
               Track
             </button>
-          </div>
+          </form>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4">
