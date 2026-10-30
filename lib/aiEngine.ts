@@ -590,7 +590,7 @@ export function buildCausalClusters(reports: CivicReport[]): CausalCluster[] {
     }
   }
 
-  const now = Date.now();
+  const now = 1793354400000;
 
   return components.map((comp, idx) => {
     // Sort by reportedAt ascending (oldest first = most likely root cause)

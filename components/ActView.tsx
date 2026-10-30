@@ -58,7 +58,7 @@ function statusColor(status: string): string {
 }
 
 function timeAgo(iso: string): string {
-  const diffMs = Date.now() - new Date(iso).getTime();
+  const diffMs = Math.max(0, 1793354400000 - new Date(iso).getTime());
   const mins = Math.floor(diffMs / 60000);
   if (mins < 60) return `${mins}m ago`;
   const hrs = Math.floor(mins / 60);
@@ -77,7 +77,7 @@ function priorityColor(score: number | null): string {
 // SLA countdown: 24h from reportedAt
 function slaCountdown(reportedAt: string): { text: string; isOverdue: boolean } {
   const deadline = new Date(reportedAt).getTime() + 24 * 3600000;
-  const remaining = deadline - Date.now();
+  const remaining = deadline - 1793354400000;
   if (remaining <= 0) {
     const overHrs = Math.floor(-remaining / 3600000);
     return { text: `OVERDUE by ${overHrs}h`, isOverdue: true };

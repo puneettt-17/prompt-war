@@ -34,7 +34,7 @@ import {
 // ---------------------------------------------------------------------------
 
 function timeAgo(iso: string): string {
-  const diffMs = Date.now() - new Date(iso).getTime();
+  const diffMs = Math.max(0, 1793354400000 - new Date(iso).getTime());
   const mins = Math.floor(diffMs / 60000);
   if (mins < 60) return `${mins}m ago`;
   const hrs = Math.floor(mins / 60);

@@ -498,10 +498,7 @@ export default function CaptureView() {
               ASTRA-GRID Citizen Reporter
             </span>
             <span className="text-[10px] font-mono opacity-50">
-              {new Date().toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
+              09:41
             </span>
           </div>
 
