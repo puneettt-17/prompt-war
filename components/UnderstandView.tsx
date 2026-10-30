@@ -271,20 +271,20 @@ export default function UnderstandView() {
                 {masterReports.length} reports
               </span>
             </div>
-            <span className="font-mono text-[10px] text-gray-400">
-              <Clock className="w-3 h-3 inline mr-1" />
+            <span className="font-mono text-[10px] text-gray-600">
+              <Clock className="w-3 h-3 inline mr-1" aria-hidden="true" />
               {lastPipelineRun ? new Date(lastPipelineRun).toLocaleTimeString('en-IN', { hour12: false }) : '—'}
             </span>
           </div>
 
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto" role="list" aria-label="Prioritized civic incident queue">
             {masterReports.map((report, idx) => {
               const isSelectedA = selectedReportA === report.id;
               const isSelectedB = selectedReportB === report.id;
               const children = mergedChildren.filter((c) => c.mergedIntoMasterId === report.id);
 
               return (
-                <div key={report.id}>
+                <div key={report.id} role="listitem">
                   {/* Master Report Card */}
                   <div
                     role="button"
@@ -320,36 +320,36 @@ export default function UnderstandView() {
                           </span>
                         )}
                         {(isSelectedA || isSelectedB) && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#FF4F00] text-white font-mono">
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#FF4F00] text-white font-mono font-bold">
                             {isSelectedA ? 'A' : 'B'}
                           </span>
                         )}
                       </div>
 
                       {/* Summary */}
-                      <p className="text-xs text-gray-600 line-clamp-1 mb-1">
+                      <p className="text-xs text-gray-700 line-clamp-1 mb-1 font-medium">
                         {report.normalizedSummary || report.rawText.slice(0, 80)}
                       </p>
 
                       {/* Bottom row */}
-                      <div className="flex items-center gap-3 text-[10px] text-gray-400 font-mono">
+                      <div className="flex items-center gap-3 text-[10px] text-gray-600 font-mono">
                         <span className={`text-sm font-bold ${priorityTextColor(report.priorityScore)}`}>
                           {report.priorityScore ?? '—'}
                         </span>
                         {report.nearestLandmark && (
                           <span className="flex items-center gap-0.5">
-                            <MapPin className="w-3 h-3" />
+                            <MapPin className="w-3 h-3" aria-hidden="true" />
                             {report.nearestLandmark.distanceMeters}m
                           </span>
                         )}
                         <span>{timeAgo(report.reportedAt)}</span>
-                        <span className="text-gray-300">{report.status}</span>
+                        <span className="text-gray-500 font-semibold">{report.status}</span>
                       </div>
                     </div>
 
                     {/* Rank number */}
-                    <div className="flex items-center px-3">
-                      <span className="font-mono text-lg font-bold text-gray-200">#{idx + 1}</span>
+                    <div className="flex items-center px-3" aria-label={`Rank #${idx + 1}`}>
+                      <span className="font-mono text-lg font-bold text-gray-400">#{idx + 1}</span>
                     </div>
                   </div>
 
@@ -357,20 +357,29 @@ export default function UnderstandView() {
                   {children.length > 0 && children.map((child) => (
                     <div
                       key={child.id}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Child report ${child.id} merged into ${report.id}`}
                       onClick={() => handleReportClick(child.id)}
-                      className={`flex items-stretch border-b border-[#D6D3CD] cursor-pointer transition-all hover:bg-gray-50 bg-gray-50/50 ${
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleReportClick(child.id);
+                        }
+                      }}
+                      className={`flex items-stretch border-b border-[#D6D3CD] cursor-pointer transition-all hover:bg-gray-50 bg-gray-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4F00] ${
                         selectedReportA === child.id || selectedReportB === child.id ? 'ring-2 ring-inset ring-[#FF4F00] bg-[#FF4F00]/5' : ''
                       }`}
                     >
-                      <div className="w-1.5 flex-shrink-0 bg-gray-300" />
+                      <div className="w-1.5 flex-shrink-0 bg-gray-400" />
                       <div className="flex-1 px-3 py-1.5 pl-8">
                         <div className="flex items-center gap-2">
-                          <span className="text-gray-400 text-[10px]">↳</span>
-                          <span className="font-mono text-[10px] text-gray-500">{child.id}</span>
-                          <span className="text-[10px] text-gray-400 truncate max-w-[200px]">
+                          <span className="text-gray-500 text-[10px]" aria-hidden="true">↳</span>
+                          <span className="font-mono text-[10px] text-gray-700 font-semibold">{child.id}</span>
+                          <span className="text-[10px] text-gray-600 truncate max-w-[200px]">
                             {child.rawText.slice(0, 50)}...
                           </span>
-                          <span className="text-[10px] text-gray-400 font-mono">→ {report.id}</span>
+                          <span className="text-[10px] text-gray-500 font-mono font-medium">→ {report.id}</span>
                         </div>
                       </div>
                     </div>

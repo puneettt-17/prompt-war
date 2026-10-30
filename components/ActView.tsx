@@ -186,12 +186,12 @@ export default function ActView() {
                     {r.priorityScore}
                   </span>
                 </div>
-                <p className="text-[10px] text-gray-500 line-clamp-1">{r.rawText.slice(0, 60)}</p>
+                <p className="text-[10px] text-gray-700 font-medium line-clamp-1">{r.rawText.slice(0, 60)}</p>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-mono ${statusColor(r.status)}`}>
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-semibold ${statusColor(r.status)}`}>
                     {r.status.replace('_', ' ')}
                   </span>
-                  <span className="text-[9px] text-gray-400">{timeAgo(r.reportedAt)}</span>
+                  <span className="text-[9px] text-gray-600 font-medium">{timeAgo(r.reportedAt)}</span>
                 </div>
               </button>
             ))}

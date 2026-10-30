@@ -673,24 +673,26 @@ export default function CaptureView() {
         {/* PRESET BUTTONS                                                     */}
         {/* ================================================================= */}
         <div className="max-w-[375px] w-full mx-auto space-y-2">
-          <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400 px-1">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-gray-600 px-1 font-semibold">
             Instant Judge Demo Presets
           </p>
           {PRESETS.map((preset, idx) => {
-            const Icon = presetIcons[idx];
             return (
               <button
                 key={idx}
+                type="button"
+                aria-label={`Judge Preset: ${preset.label}`}
                 onClick={() => handlePreset(preset)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border border-[#D6D3CD] bg-white hover:border-[#FF4F00] hover:bg-[#FF4F00]/5 transition-all text-left group"
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border border-[#D6D3CD] bg-white hover:border-[#FF4F00] hover:bg-[#FF4F00]/5 transition-all text-left group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4F00]"
               >
-                <span className="text-lg flex-shrink-0">{preset.icon}</span>
-                <span className="text-xs font-medium text-[#111315] flex-1 leading-tight">
+                <span className="text-lg flex-shrink-0" aria-hidden="true">{preset.icon}</span>
+                <span className="text-xs font-semibold text-[#111315] flex-1 leading-tight">
                   {preset.label}
                 </span>
                 <ChevronRight
                   size={14}
-                  className="text-gray-300 group-hover:text-[#FF4F00] transition-colors flex-shrink-0"
+                  aria-hidden="true"
+                  className="text-gray-400 group-hover:text-[#FF4F00] transition-colors flex-shrink-0"
                 />
               </button>
             );
@@ -701,18 +703,18 @@ export default function CaptureView() {
       {/* ================================================================= */}
       {/* RIGHT PANEL — Live AI X-Ray Pipeline Telemetry                    */}
       {/* ================================================================= */}
-      <div className="overflow-y-auto pr-2">
+      <div className="overflow-y-auto pr-2" role="region" aria-label="Pipeline Telemetry Results" aria-live="polite">
         {!telemetry ? (
           // Empty state
           <div className="h-full flex items-center justify-center">
-            <div className="text-center space-y-3 opacity-40">
+            <div className="text-center space-y-3 opacity-60">
               <div className="w-16 h-16 mx-auto rounded-2xl bg-[#F4F3EF] border border-[#D6D3CD] flex items-center justify-center">
-                <Zap size={24} className="text-[#FF4F00]" />
+                <Zap size={24} className="text-[#FF4F00]" aria-hidden="true" />
               </div>
-              <p className="text-sm font-medium text-[#111315]">
+              <p className="text-sm font-semibold text-[#111315]">
                 Submit a report or click a preset
               </p>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-600">
                 The AI X-Ray pipeline will appear here
               </p>
             </div>

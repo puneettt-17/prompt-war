@@ -117,13 +117,13 @@ export default function TopBar() {
       >
         {/* Left: Logo */}
         <div className="flex flex-col justify-center shrink-0">
-          <div className="text-lg font-bold tracking-widest leading-tight">
+          <h1 className="text-lg font-bold tracking-widest leading-tight">
             <span style={{ color: '#FF4F00' }}>ASTRA</span>
             <span style={{ color: '#F4F3EF' }}>-GRID</span>
-          </div>
+          </h1>
           <span
             className="text-[9px] tracking-wider leading-none"
-            style={{ color: '#6b7280', fontFamily: 'JetBrains Mono, monospace' }}
+            style={{ color: '#9CA3AF', fontFamily: 'JetBrains Mono, monospace' }}
           >
             MUNICIPAL TRIAGE &amp; CAUSAL INFRASTRUCTURE WORKBENCH
           </span>
